@@ -13,6 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import { useRef, useState, useEffect } from 'react';
 import Link from '@mui/material/Link';
@@ -33,6 +34,8 @@ const App = () => {
 
   useEffect(() => {
     const onImgPaste = (e) => {
+      setUrlText('');
+      setImgSrc('');
       setImgPrev(e.clipboardData.files[0]);
       console.log(e.clipboardData.files[0]);
     };
@@ -121,14 +124,13 @@ const App = () => {
   };
 
   return (
-    <Box sx={{ backgroundColor: '#e3f2fd', height: '100vh' }}>
+    <Box>
       <AppBar position="static" sx={{ backgroundColor: '#90caf9' }}>
         <Container maxWidth="md">
           <Toolbar variant="dense" disableGutters>
-            {/* <Typography variant="h5" noWrap component="div">
-              PasteIt
-            </Typography> */}
-            <img src="./logo.png" alt="" />
+            <Link href="/">
+              <img src="./logo.png" alt="" />
+            </Link>
           </Toolbar>
         </Container>
       </AppBar>
@@ -167,7 +169,7 @@ const App = () => {
               mt: 2,
               p: 5,
               height: '36vw',
-              display: 'flex',
+              display: { xs: 'none', md: 'flex' },
               alignItems: 'center',
               justifyContent: 'center',
             }}
@@ -177,7 +179,7 @@ const App = () => {
               variant="h3"
               sx={{
                 display: imgSrc == '' ? 'block' : 'none',
-                opacity: 0.4,
+                opacity: 0.3,
                 textAlign: 'center',
                 lineHeight: 1.3,
               }}
@@ -185,6 +187,7 @@ const App = () => {
               Press <strong>Ctrl+V</strong> to paste
               <br />a screenshot from the clipboard
             </Typography>
+            {!urlText && imgSrc && <CircularProgress size="80px" />}
             <Link href={urlText} target="_blank" sx={{ height: '100%' }}>
               <img
                 src={imgSrc}
@@ -197,6 +200,68 @@ const App = () => {
               />
             </Link>
           </Paper>
+          <Typography
+            variant="h5"
+            component="div"
+            sx={{
+              display: { xs: 'none', md: 'block' },
+              pt: 4,
+              textAlign: 'center',
+            }}
+          >
+            Or upload an image file from your computer:
+          </Typography>
+          <Box sx={{ pt: 3, pb: 5, display: 'flex', justifyContent: 'center' }}>
+            <Paper sx={{ width: { xs: '100%', md: 'initial' } }}>
+              <Box
+                sx={{
+                  display: { xs: 'block', md: 'flex' },
+                  backgroundColor: '#fff',
+                  borderRadius: '5px',
+                  p: '10px',
+                  width: { xs: '100%', md: '450px' },
+                  maxWidth: '100%',
+                }}
+              >
+                <Button
+                  variant="contained"
+                  component="label"
+                  sx={{
+                    px: 5,
+                    textTransform: 'none',
+                    backgroundColor: '#18629f',
+                    display: 'block',
+                    textAlign: 'center',
+                  }}
+                >
+                  <Typography variant="h5" component="span">
+                    Browse...
+                  </Typography>
+                  <input type="file" hidden />
+                </Button>
+                <Box
+                  sx={{
+                    display: { xs: 'none', md: 'initial' },
+                    ml: 3,
+                    color: '#919191',
+                  }}
+                >
+                  <Typography variant="h5" component="div">
+                    Choose File
+                  </Typography>
+                  <Typography
+                    component="p"
+                    sx={{
+                      mt: '-3px',
+                      fontSize: '13px',
+                    }}
+                  >
+                    (or drag and drop it)
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
         </Box>
       </Container>
     </Box>
