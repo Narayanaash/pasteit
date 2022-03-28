@@ -25,19 +25,24 @@ import {
   getDownloadURL,
 } from 'firebase/storage';
 import app from './firebase';
+import { db } from './firebase';
+import { addDoc, collection } from 'firebase/firestore';
 import Resizer from 'react-image-file-resizer';
+import { FileUploader } from 'react-drag-drop-files';
+
+const fileTypes = ['JPG', 'PNG', 'GIF'];
 
 const App = () => {
   const [urlText, setUrlText] = useState('');
   const [imgSrc, setImgSrc] = useState('');
   const [isCopiedvisible, setIsCopiedvisible] = useState(false);
+  const [inputFile, setInputFile] = useState(null);
 
   useEffect(() => {
     const onImgPaste = (e) => {
       setUrlText('');
       setImgSrc('');
       setImgPrev(e.clipboardData.files[0]);
-      console.log(e.clipboardData.files[0]);
     };
 
     window.addEventListener('paste', onImgPaste);
@@ -46,6 +51,19 @@ const App = () => {
       window.removeEventListener('paste', onImgPaste);
     };
   }, []);
+
+  let test = async (url) => {
+    try {
+      const docRef = await addDoc(collection(db, 'urls'), {
+        url: url,
+        born: 1912,
+      });
+
+      console.log('Document written with ID: ', docRef.id);
+    } catch (e) {
+      console.error('Error adding document: ', e);
+    }
+  };
 
   const resizeFile = (file) =>
     new Promise((resolve) => {
@@ -108,6 +126,7 @@ const App = () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           // console.log(downloadURL);
           setUrlText(downloadURL);
+          test(downloadURL);
         });
       }
     );
@@ -121,6 +140,13 @@ const App = () => {
     setTimeout(() => {
       setIsCopiedvisible(false);
     }, 3000);
+  };
+
+  const handleChange = (file) => {
+    setInputFile(file);
+    setUrlText('');
+    setImgSrc('');
+    setImgPrev(file);
   };
 
   return (
@@ -212,55 +238,62 @@ const App = () => {
             Or upload an image file from your computer:
           </Typography>
           <Box sx={{ pt: 3, pb: 5, display: 'flex', justifyContent: 'center' }}>
-            <Paper sx={{ width: { xs: '100%', md: 'initial' } }}>
-              <Box
-                sx={{
-                  display: { xs: 'block', md: 'flex' },
-                  backgroundColor: '#fff',
-                  borderRadius: '5px',
-                  p: '10px',
-                  width: { xs: '100%', md: '450px' },
-                  maxWidth: '100%',
-                }}
-              >
-                <Button
-                  variant="contained"
-                  component="label"
-                  sx={{
-                    px: 5,
-                    textTransform: 'none',
-                    backgroundColor: '#18629f',
-                    display: 'block',
-                    textAlign: 'center',
-                  }}
-                >
-                  <Typography variant="h5" component="span">
-                    Browse...
-                  </Typography>
-                  <input type="file" hidden />
-                </Button>
+            <FileUploader
+              handleChange={handleChange}
+              name="file"
+              types={fileTypes}
+              maxSize="2"
+              hoverTitle=" "
+            >
+              <Paper sx={{ width: { xs: '100%', md: 'initial' } }}>
                 <Box
                   sx={{
-                    display: { xs: 'none', md: 'initial' },
-                    ml: 3,
-                    color: '#919191',
+                    display: { xs: 'block', md: 'flex' },
+                    backgroundColor: '#fff',
+                    borderRadius: '5px',
+                    p: '10px',
+                    width: { xs: '100%', md: '450px' },
+                    maxWidth: '100%',
                   }}
                 >
-                  <Typography variant="h5" component="div">
-                    Choose File
-                  </Typography>
-                  <Typography
-                    component="p"
+                  <Button
+                    variant="contained"
+                    component="label"
                     sx={{
-                      mt: '-3px',
-                      fontSize: '13px',
+                      px: 5,
+                      textTransform: 'none',
+                      backgroundColor: '#18629f',
+                      display: 'block',
+                      textAlign: 'center',
                     }}
                   >
-                    (or drag and drop it)
-                  </Typography>
+                    <Typography variant="h5" component="span">
+                      Browse...
+                    </Typography>
+                  </Button>
+                  <Box
+                    sx={{
+                      display: { xs: 'none', md: 'initial' },
+                      ml: 3,
+                      color: '#919191',
+                    }}
+                  >
+                    <Typography variant="h5" component="div">
+                      Choose File
+                    </Typography>
+                    <Typography
+                      component="p"
+                      sx={{
+                        mt: '-3px',
+                        fontSize: '13px',
+                      }}
+                    >
+                      (or drag and drop it)
+                    </Typography>
+                  </Box>
                 </Box>
-              </Box>
-            </Paper>
+              </Paper>
+            </FileUploader>
           </Box>
         </Box>
       </Container>
