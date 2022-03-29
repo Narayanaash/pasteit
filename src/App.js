@@ -26,24 +26,31 @@ import {
 } from 'firebase/storage';
 import app from './firebase';
 import { db } from './firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, getDocs, collection, query, where } from 'firebase/firestore';
 import Resizer from 'react-image-file-resizer';
 import { FileUploader } from 'react-drag-drop-files';
+import { useParams } from 'react-router-dom';
+import { Code } from '@mui/icons-material';
 
 const fileTypes = ['JPG', 'PNG', 'GIF'];
+
+const baseurl = 'https://pasteitt.netlify.app/';
 
 const App = () => {
   const [urlText, setUrlText] = useState('');
   const [imgSrc, setImgSrc] = useState('');
+  const [imgLongUrl, setImgLongUrl] = useState('');
   const [isCopiedvisible, setIsCopiedvisible] = useState(false);
   const [inputFile, setInputFile] = useState(null);
 
+  let params = useParams();
+
   useEffect(() => {
-    const onImgPaste = (e) => {
-      setUrlText('');
-      setImgSrc('');
-      setImgPrev(e.clipboardData.files[0]);
-    };
+    let urlcode = params.urlcode;
+
+    if (urlcode) {
+      fetchImgUrl(urlcode);
+    }
 
     window.addEventListener('paste', onImgPaste);
 
@@ -52,17 +59,30 @@ const App = () => {
     };
   }, []);
 
-  let test = async (url) => {
+  const fetchImgUrl = async (urlcode) => {
+    const q = query(collection(db, 'urls'), where('urlcode', '==', urlcode));
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      setImgLongUrl(doc.data().url);
+      setImgSrc(doc.data().url);
+      setUrlText(baseurl + urlcode);
+    });
+  };
+
+  const onImgPaste = (e) => {
+    setUrlText('');
+    setImgSrc('');
+    setImgPrev(e.clipboardData.files[0]);
+  };
+
+  let storeUrl = async (url, urlCode) => {
     try {
       const docRef = await addDoc(collection(db, 'urls'), {
         url: url,
-        born: 1912,
+        urlcode: urlCode,
       });
-
-      console.log('Document written with ID: ', docRef.id);
-    } catch (e) {
-      console.error('Error adding document: ', e);
-    }
+    } catch (e) {}
   };
 
   const resizeFile = (file) =>
@@ -89,24 +109,18 @@ const App = () => {
       setImgSrc(fileReader.result);
     };
 
-    const fileName = new Date().getTime() + '.png';
+    const fileName =
+      new Date().getTime() + Math.floor(Math.random() * 10000) + '.png';
     const storage = getStorage(app);
     const storageRef = ref(storage, fileName);
     file = await resizeFile(file);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
-    // Register three observers:
-    // 1. 'state_changed' observer, called any time the state changes
-    // 2. Error observer, called on failure
-    // 3. Completion observer, called on successful completion
     uploadTask.on(
       'state_changed',
       (snapshot) => {
-        // Observe state change events such as progress, pause, and resume
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        // console.log('Upload is ' + progress + '% done');
         switch (snapshot.state) {
           case 'paused':
             console.log('Upload is paused');
@@ -117,16 +131,15 @@ const App = () => {
           default:
         }
       },
-      (error) => {
-        // Handle unsuccessful uploads
-      },
+      (error) => {},
       () => {
-        // Handle successful uploads on complete
-        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          // console.log(downloadURL);
-          setUrlText(downloadURL);
-          test(downloadURL);
+          let urlCode =
+            new Date().getTime() + Math.floor(Math.random() * 10000);
+          setImgLongUrl(downloadURL);
+          setUrlText(baseurl + urlCode);
+          storeUrl(downloadURL, urlCode.toString());
+          window.history.replaceState(null, '', baseurl + urlCode);
         });
       }
     );
@@ -162,7 +175,7 @@ const App = () => {
       </AppBar>
       <Container maxWidth="md">
         <Box sx={{ mt: 4 }}>
-          <Box sx={{ display: urlText != '' ? 'flex' : 'none' }}>
+          <Box sx={{ display: urlText !== '' ? 'flex' : 'none' }}>
             <Box className="urlInputBox" sx={{ flexGrow: 1 }}>
               <input
                 type="text"
@@ -199,27 +212,28 @@ const App = () => {
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            className={`${urlText != '' ? 'active imgBox' : 'imgBox'}`}
+            className={`${urlText !== '' ? 'active imgBox' : 'imgBox'}`}
           >
             <Typography
               variant="h3"
               sx={{
-                display: imgSrc == '' ? 'block' : 'none',
+                display: imgSrc === '' ? 'block' : 'none',
                 opacity: 0.3,
                 textAlign: 'center',
                 lineHeight: 1.3,
+                userSelect: 'none',
               }}
             >
               Press <strong>Ctrl+V</strong> to paste
               <br />a screenshot from the clipboard
             </Typography>
             {!urlText && imgSrc && <CircularProgress size="80px" />}
-            <Link href={urlText} target="_blank" sx={{ height: '100%' }}>
+            <Link href={imgLongUrl} target="_blank" sx={{ height: '100%' }}>
               <img
                 src={imgSrc}
                 alt=""
                 style={{
-                  display: urlText != '' ? 'block' : 'none',
+                  display: urlText !== '' ? 'block' : 'none',
                   maxWidth: '100%',
                   maxHeight: '100%',
                 }}
