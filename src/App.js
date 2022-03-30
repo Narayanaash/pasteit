@@ -1,22 +1,13 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CircularProgress from '@mui/material/CircularProgress';
-import TextField from '@mui/material/TextField';
-import { useRef, useState, useEffect } from 'react';
-import Link from '@mui/material/Link';
+import { useState, useEffect } from 'react';
 import './App.css';
 import {
   getStorage,
@@ -30,7 +21,8 @@ import { addDoc, getDocs, collection, query, where } from 'firebase/firestore';
 import Resizer from 'react-image-file-resizer';
 import { FileUploader } from 'react-drag-drop-files';
 import { useParams } from 'react-router-dom';
-import { Code } from '@mui/icons-material';
+import Navbar from './comps/Navbar';
+import Footer from './comps/Footer';
 
 const fileTypes = ['JPG', 'PNG', 'GIF'];
 
@@ -41,7 +33,6 @@ const App = () => {
   const [imgSrc, setImgSrc] = useState('');
   const [imgLongUrl, setImgLongUrl] = useState('');
   const [isCopiedvisible, setIsCopiedvisible] = useState(false);
-  const [inputFile, setInputFile] = useState(null);
 
   let params = useParams();
 
@@ -156,7 +147,6 @@ const App = () => {
   };
 
   const handleChange = (file) => {
-    setInputFile(file);
     setUrlText('');
     setImgSrc('');
     setImgPrev(file);
@@ -164,17 +154,9 @@ const App = () => {
 
   return (
     <Box>
-      <AppBar position="static" sx={{ backgroundColor: '#90caf9' }}>
-        <Container maxWidth="md">
-          <Toolbar variant="dense" disableGutters>
-            <Link href="/">
-              <img src="./logo.png" alt="" />
-            </Link>
-          </Toolbar>
-        </Container>
-      </AppBar>
+      <Navbar />
       <Container maxWidth="md">
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ my: 4 }}>
           <Box sx={{ display: urlText !== '' ? 'flex' : 'none' }}>
             <Box className="urlInputBox" sx={{ flexGrow: 1 }}>
               <input
@@ -194,6 +176,7 @@ const App = () => {
               color="error"
               startIcon={<DeleteIcon />}
               sx={{
+                display: { xs: 'none', md: 'block' },
                 height: '35px',
                 ml: '10px',
                 textTransform: 'none',
@@ -202,13 +185,20 @@ const App = () => {
             >
               Delete screenshot
             </Button>
+            <IconButton
+              aria-label="delete"
+              color="error"
+              sx={{ display: { xs: 'block', md: 'none' } }}
+            >
+              <DeleteIcon />
+            </IconButton>
           </Box>
           <Paper
             sx={{
               mt: 2,
               p: { xs: '10px', md: 5 },
               height: { xs: '80vw', md: '36vw' },
-              display: 'flex',
+              display: { xs: imgSrc === '' ? 'none' : 'flex', md: 'flex' },
               alignItems: 'center',
               justifyContent: 'center',
             }}
@@ -217,7 +207,7 @@ const App = () => {
             <Typography
               variant="h3"
               sx={{
-                display: imgSrc === '' ? 'block' : 'none',
+                display: { xs: 'none', md: imgSrc === '' ? 'block' : 'none' },
                 opacity: 0.3,
                 textAlign: 'center',
                 lineHeight: 1.3,
@@ -228,7 +218,7 @@ const App = () => {
               <br />a screenshot from the clipboard
             </Typography>
             {!urlText && imgSrc && <CircularProgress size="80px" />}
-            <Link href={imgLongUrl} target="_blank" sx={{ height: '100%' }}>
+            <a href={imgLongUrl} target="_blank" style={{ height: '100%' }}>
               <img
                 src={imgSrc}
                 alt=""
@@ -238,7 +228,7 @@ const App = () => {
                   maxHeight: '100%',
                 }}
               />
-            </Link>
+            </a>
           </Paper>
           <Typography
             variant="h5"
@@ -311,6 +301,7 @@ const App = () => {
           </Box>
         </Box>
       </Container>
+      <Footer />
     </Box>
   );
 };

@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import SavedImages from './page/SavedImages';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -11,6 +12,7 @@ ReactDOM.render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path=":urlcode" element={<App />} />
+        <Route path="/saved" element={<SavedImages />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
