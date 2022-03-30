@@ -206,9 +206,9 @@ const App = () => {
           <Paper
             sx={{
               mt: 2,
-              p: 5,
-              height: '36vw',
-              display: { xs: 'none', md: 'flex' },
+              p: { xs: '10px', md: 5 },
+              height: { xs: '80vw', md: '36vw' },
+              display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
