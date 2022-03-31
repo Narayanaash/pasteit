@@ -9,13 +9,19 @@ import Footer from '../comps/Footer';
 import { getDocs, collection, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useEffect, useState } from 'react';
+import Skeleton from '@mui/material/Skeleton';
 
 export default function SavedImages() {
   const [userImageData, setUserImageData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let userId = localStorage.getItem('userId');
-    fetchImgUrl(userId);
+    if (userId) {
+      fetchImgUrl(userId);
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
   const fetchImgUrl = async (userId) => {
@@ -28,6 +34,8 @@ export default function SavedImages() {
     querySnapshot.forEach((doc) => {
       setUserImageData((prevData) => [doc.data(), ...prevData]);
     });
+    console.log(querySnapshot);
+    setIsLoading(false);
   };
 
   return (
@@ -35,30 +43,77 @@ export default function SavedImages() {
       <Navbar />
       <Container maxWidth="md">
         <Grid container spacing={2} sx={{ mt: 2, mb: 5 }}>
-          {userImageData.map((img) => (
-            <Grid item xs={12} sm={6} md={4} key={img.urlcode}>
-              <Link to="/322323">
-                <Card sx={{ maxWidth: 345 }} className="savedCard">
-                  <CardMedia
-                    component="img"
-                    height="220"
-                    image={img.url}
-                    alt=""
-                    sx={{ p: '10px' }}
-                  />
-                  <CardActions>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ pb: 0.8, pl: '3px' }}
-                    >
-                      September 14, 2016
-                    </Typography>
-                  </CardActions>
-                </Card>
-              </Link>
-            </Grid>
-          ))}
+          {isLoading ? (
+            <>
+              <Grid item xs={12} sm={6} md={4}>
+                <Skeleton variant="rectangular" height={220} />
+                <Box sx={{ pt: 0.5 }}>
+                  <Skeleton />
+                  <Skeleton width="60%" />
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Skeleton variant="rectangular" height={220} />
+                <Box sx={{ pt: 0.5 }}>
+                  <Skeleton />
+                  <Skeleton width="60%" />
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Skeleton variant="rectangular" height={220} />
+                <Box sx={{ pt: 0.5 }}>
+                  <Skeleton />
+                  <Skeleton width="60%" />
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Skeleton variant="rectangular" height={220} />
+                <Box sx={{ pt: 0.5 }}>
+                  <Skeleton />
+                  <Skeleton width="60%" />
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Skeleton variant="rectangular" height={220} />
+                <Box sx={{ pt: 0.5 }}>
+                  <Skeleton />
+                  <Skeleton width="60%" />
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Skeleton variant="rectangular" height={220} />
+                <Box sx={{ pt: 0.5 }}>
+                  <Skeleton />
+                  <Skeleton width="60%" />
+                </Box>
+              </Grid>
+            </>
+          ) : (
+            userImageData.map((img) => (
+              <Grid item xs={12} sm={6} md={4} key={img.urlcode}>
+                <Link to="/322323">
+                  <Card sx={{ maxWidth: 345 }} className="savedCard">
+                    <CardMedia
+                      component="img"
+                      height="220"
+                      image={img.url}
+                      alt=""
+                      sx={{ p: '10px' }}
+                    />
+                    <CardActions>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ pb: 0.8, pl: '3px' }}
+                      >
+                        September 14, 2016
+                      </Typography>
+                    </CardActions>
+                  </Card>
+                </Link>
+              </Grid>
+            ))
+          )}
         </Grid>
       </Container>
       <Footer />
