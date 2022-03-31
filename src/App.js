@@ -33,22 +33,31 @@ const App = () => {
   const [imgSrc, setImgSrc] = useState('');
   const [imgLongUrl, setImgLongUrl] = useState('');
   const [isCopiedvisible, setIsCopiedvisible] = useState(false);
+  const [userId, setUserId] = useState('');
 
   let params = useParams();
+  let urlcode = params.urlcode;
 
   useEffect(() => {
-    let urlcode = params.urlcode;
-
     if (urlcode) {
       fetchImgUrl(urlcode);
     }
 
     window.addEventListener('paste', onImgPaste);
 
+    const newUserId = new Date().getTime() + Math.floor(Math.random() * 100000);
+    let localUserId = localStorage.getItem('userId');
+    if (!localUserId) {
+      localStorage.setItem('userId', newUserId);
+      setUserId(newUserId);
+    } else {
+      setUserId(localUserId);
+    }
+
     return () => {
       window.removeEventListener('paste', onImgPaste);
     };
-  }, []);
+  }, [userId]);
 
   const fetchImgUrl = async (urlcode) => {
     const q = query(collection(db, 'urls'), where('urlcode', '==', urlcode));
@@ -72,6 +81,7 @@ const App = () => {
       const docRef = await addDoc(collection(db, 'urls'), {
         url: url,
         urlcode: urlCode,
+        userId: userId,
       });
     } catch (e) {}
   };
@@ -114,10 +124,10 @@ const App = () => {
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         switch (snapshot.state) {
           case 'paused':
-            console.log('Upload is paused');
+            // console.log('Upload is paused');
             break;
           case 'running':
-            console.log('Upload is running');
+            // console.log('Upload is running');
             break;
           default:
         }
@@ -176,7 +186,7 @@ const App = () => {
               color="error"
               startIcon={<DeleteIcon />}
               sx={{
-                display: { xs: 'none', md: 'block' },
+                display: { xs: 'none', md: 'flex' },
                 height: '35px',
                 ml: '10px',
                 textTransform: 'none',

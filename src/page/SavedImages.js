@@ -6,23 +6,43 @@ import Typography from '@mui/material/Typography';
 import Navbar from '../comps/Navbar';
 import { Link } from 'react-router-dom';
 import Footer from '../comps/Footer';
-
-const baseurl = 'https://pasteitt.netlify.app/';
+import { getDocs, collection, query, where } from 'firebase/firestore';
+import { db } from '../firebase';
+import { useEffect, useState } from 'react';
 
 export default function SavedImages() {
+  const [userImageData, setUserImageData] = useState([]);
+
+  useEffect(() => {
+    let userId = localStorage.getItem('userId');
+    fetchImgUrl(userId);
+  }, []);
+
+  const fetchImgUrl = async (userId) => {
+    const q = query(
+      collection(db, 'urls'),
+      where('userId', '==', userId.toString())
+    );
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      setUserImageData((prevData) => [doc.data(), ...prevData]);
+    });
+  };
+
   return (
     <Box>
       <Navbar />
       <Container maxWidth="md">
         <Grid container spacing={2} sx={{ mt: 2, mb: 5 }}>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
-            <Grid item xs={12} sm={6} md={4}>
-              <a href={baseurl}>
+          {userImageData.map((img) => (
+            <Grid item xs={12} sm={6} md={4} key={img.urlcode}>
+              <Link to="/322323">
                 <Card sx={{ maxWidth: 345 }} className="savedCard">
                   <CardMedia
                     component="img"
                     height="220"
-                    image="https://via.placeholder.com/400.png/"
+                    image={img.url}
                     alt=""
                     sx={{ p: '10px' }}
                   />
@@ -36,7 +56,7 @@ export default function SavedImages() {
                     </Typography>
                   </CardActions>
                 </Card>
-              </a>
+              </Link>
             </Grid>
           ))}
         </Grid>
