@@ -91,7 +91,7 @@ export default function SavedImages() {
           ) : (
             userImageData.map((img) => (
               <Grid item xs={12} sm={6} md={4} key={img.urlcode}>
-                <Link to="/322323">
+                <Link to={`/${img.urlcode}`}>
                   <Card sx={{ maxWidth: 345 }} className="savedCard">
                     <CardMedia
                       component="img"
