@@ -34,7 +34,6 @@ export default function SavedImages() {
     querySnapshot.forEach((doc) => {
       setUserImageData((prevData) => [doc.data(), ...prevData]);
     });
-    console.log(querySnapshot);
     setIsLoading(false);
   };
 
@@ -106,7 +105,7 @@ export default function SavedImages() {
                         color="text.secondary"
                         sx={{ pb: 0.8, pl: '3px' }}
                       >
-                        September 14, 2016
+                        {img.createdAt ? img.createdAt : <i>Date not found!</i>}
                       </Typography>
                     </CardActions>
                   </Card>

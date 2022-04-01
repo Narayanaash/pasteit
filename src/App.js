@@ -82,6 +82,7 @@ const App = () => {
         url: url,
         urlcode: urlCode,
         userId: userId,
+        createdAt: new Date().toDateString(),
       });
     } catch (e) {}
   };
