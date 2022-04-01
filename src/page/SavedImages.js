@@ -42,77 +42,44 @@ export default function SavedImages() {
       <Navbar />
       <Container maxWidth="md">
         <Grid container spacing={2} sx={{ mt: 2, mb: 5 }}>
-          {isLoading ? (
-            <>
-              <Grid item xs={12} sm={6} md={4}>
-                <Skeleton variant="rectangular" height={220} />
-                <Box sx={{ pt: 0.5 }}>
-                  <Skeleton />
-                  <Skeleton width="60%" />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Skeleton variant="rectangular" height={220} />
-                <Box sx={{ pt: 0.5 }}>
-                  <Skeleton />
-                  <Skeleton width="60%" />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Skeleton variant="rectangular" height={220} />
-                <Box sx={{ pt: 0.5 }}>
-                  <Skeleton />
-                  <Skeleton width="60%" />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Skeleton variant="rectangular" height={220} />
-                <Box sx={{ pt: 0.5 }}>
-                  <Skeleton />
-                  <Skeleton width="60%" />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Skeleton variant="rectangular" height={220} />
-                <Box sx={{ pt: 0.5 }}>
-                  <Skeleton />
-                  <Skeleton width="60%" />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Skeleton variant="rectangular" height={220} />
-                <Box sx={{ pt: 0.5 }}>
-                  <Skeleton />
-                  <Skeleton width="60%" />
-                </Box>
-              </Grid>
-            </>
-          ) : (
-            userImageData.map((img) => (
-              <Grid item xs={12} sm={6} md={4} key={img.urlcode}>
-                <Link to={`/${img.urlcode}`}>
-                  <Card sx={{ maxWidth: 345 }} className="savedCard">
-                    <CardMedia
-                      component="img"
-                      height="220"
-                      image={img.url}
-                      alt=""
-                      sx={{ p: '10px' }}
-                    />
-                    <CardActions>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ pb: 0.8, pl: '3px' }}
-                      >
-                        {img.createdAt ? img.createdAt : <i>Date not found!</i>}
-                      </Typography>
-                    </CardActions>
-                  </Card>
-                </Link>
-              </Grid>
-            ))
-          )}
+          {isLoading
+            ? [1, 2, 3, 4, 5, 6].map((item) => (
+                <Grid item xs={12} sm={6} md={4}>
+                  <Skeleton variant="rectangular" height={220} />
+                  <Box sx={{ pt: 0.5 }}>
+                    <Skeleton />
+                    <Skeleton width="60%" />
+                  </Box>
+                </Grid>
+              ))
+            : userImageData.map((img) => (
+                <Grid item xs={12} sm={6} md={4} key={img.urlcode}>
+                  <Link to={`/${img.urlcode}`}>
+                    <Card sx={{ maxWidth: 345 }} className="savedCard">
+                      <CardMedia
+                        component="img"
+                        height="220"
+                        image={img.url}
+                        alt=""
+                        sx={{ p: '10px' }}
+                      />
+                      <CardActions>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ pb: 0.8, pl: '3px' }}
+                        >
+                          {img.createdAt ? (
+                            img.createdAt
+                          ) : (
+                            <i>Date not found!</i>
+                          )}
+                        </Typography>
+                      </CardActions>
+                    </Card>
+                  </Link>
+                </Grid>
+              ))}
         </Grid>
       </Container>
       <Footer />

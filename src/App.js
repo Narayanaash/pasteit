@@ -23,6 +23,7 @@ import { FileUploader } from 'react-drag-drop-files';
 import { useParams } from 'react-router-dom';
 import Navbar from './comps/Navbar';
 import Footer from './comps/Footer';
+import { Add, AddBox } from '@mui/icons-material';
 
 const fileTypes = ['JPG', 'PNG', 'GIF'];
 
@@ -182,27 +183,28 @@ const App = () => {
                 <div className="urlCopiedAlert">Copied to clipboard</div>
               )}
             </Box>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteIcon />}
-              sx={{
-                display: { xs: 'none', md: 'flex' },
-                height: '35px',
-                ml: '10px',
-                textTransform: 'none',
-                lineHeight: 1,
-              }}
-            >
-              Delete screenshot
-            </Button>
-            <IconButton
-              aria-label="delete"
-              color="error"
-              sx={{ display: { xs: 'block', md: 'none' } }}
-            >
-              <DeleteIcon />
-            </IconButton>
+            <a href="/">
+              <Button
+                variant="outlined"
+                startIcon={<Add />}
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  height: '35px',
+                  ml: '10px',
+                  textTransform: 'none',
+                  lineHeight: 1,
+                }}
+              >
+                New screenshot
+              </Button>
+              <IconButton
+                aria-label="delete"
+                color="primary"
+                sx={{ display: { xs: 'block', md: 'none' } }}
+              >
+                <AddBox />
+              </IconButton>
+            </a>
           </Box>
           <Paper
             sx={{
